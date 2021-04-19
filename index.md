@@ -6,3 +6,4 @@
 
 ## Week 1 (19.04)
 [Here](files/2017402156_HW1.html) is my first homework. 
+My RMD file can be found [Here](files/2017402156_HW1.rmd)
