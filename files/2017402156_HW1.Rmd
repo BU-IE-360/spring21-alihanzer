@@ -1,0 +1,91 @@
+---
+title: "Alihan Zer - HW1"
+output: html_document
+---
+
+In this homework, the different datas are selected to be compared. These are: credit card expenses per year, dolar exchange rate per year, and consumer price index per year. The aim is, understanding the relationship between these three. 
+
+
+
+Credit cards are being used quite commonly in Turkey. They provide interest free loans for users. Therefore, it may be expected that the usage of credit cards may increase as the prices go up. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+devtools::install_github("algopoly/EVDS")
+force = TRUE
+library(tidyverse)
+library(EVDS)
+library(lubridate)
+library(zoo)
+set_evds_key("wfAU0wyHqz")
+dfkk <- get_series(series = c("TP.KKHARTUT.KT1"), start_date = "01-03-2014", end_date = "01-03-2021")
+df1 <- dfkk$items
+df1$UNIXTIME <- NULL
+df1$Tarih <- as.POSIXct(df1$Tarih, format="%d-%m-%Y")
+df1$TP_KKHARTUT_KT1<- as.numeric(as.character.numeric_version(df1$TP_KKHARTUT_KT1))
+plot(df1$Tarih, df1$TP_KKHARTUT_KT1, col="red", type="l", xlab="Date", ylab="Credit Card Expenses", main =  "Credit Card Expenses Per Year")
+
+
+```
+
+As it can be seen, credit card expenses have a trend to increase as the years go by. There are a few drop that needs to be explained. First of which is the drop in 2018. The value of Turkish Lira has decreased tremendously in 2018, which caused the economic crisis. Similarly, the economic crisis occured in 2020 also affected the usage of credit cards negatively.
+
+
+The chart below shows the search frequency of the phrase "kredi kartı". As expected, there are two points that looks like outliers and these are the dates in which the economic crisis was started. The reason for these sudden increases may be the those who are searching their credit card debts.
+```{r}
+cc <- read.csv("C:\\Users\\HP\\Desktop\\credit_card1.csv", header = TRUE, sep = ";")
+cc$Tarih <- as.yearmon(cc$Tarih)
+cc$Tarih <- as.POSIXct(cc$Tarih, format ="%d-%m-%y")
+plot(cc$Tarih, cc$Miktar, col = "blue", type = "l", xlab = "Date", ylab = "Number of searches", main = "Number of searches of the phrase 'kredi kartı'")
+```
+
+
+
+Since the reason for the flactuations in the credit card expenses may be the economic crises, change of USD/TRY rate should be examined further. Exchange rate of USD has been quite popular over the last couple years. 
+
+```{r cars}
+usd <- read.csv("C:\\Users\\HP\\Desktop\\dollar.csv", header = TRUE, sep = ";")
+dfusd <- get_series(series = c("TP.DK.USD.A.YTL"), start_date = "01-03-2014", end_date = "01-03-2021")
+df2 <- dfusd$items
+df2$UNIXTIME <- NULL
+df2 <- df2[!is.na(df2$TP_DK_USD_A_YTL),]
+df2$Tarih <- as.POSIXct(df2$Tarih, format="%d-%m-%Y")
+df2$TP_DK_USD_A_YTL<- as.numeric(as.character.numeric_version(df2$TP_DK_USD_A_YTL))
+plot(df2$Tarih, df2$TP_DK_USD_A_YTL, col="red", type = "l", xlab = "Date", ylab = "USD Exchange Rate", main = "USD Exchange Rate per year")
+
+```
+As expected, there is a sudden rise in 2018. The crisis happened in 2018 is known as "Turkish currency and debt crisis". This crisis is still ongoing. Thus, we can observe more sudden rises and fall recently. Lately, Turkey is having hard times due to the pandemic. The pick at the end of the chart can be explained by this pandemic.
+
+
+The sudden increase in 2018 caused people to search "dolar" in Google as well. Search volume of the word "dolar" and the USD/TRY exchange rate from 2014 to the crisis in 2018 looks similar. Up to that date, people had tendency to search the word "dolar" as the rate increased. However, after the tremendous increas in 2018, search volume started to go down. There may be couple reasons for this fall. First of which can be the exchange rate has increased relatively high in 2018. However, the rate of change of USD/TRY decreased, hence its search volume. Similarly, it can be seen that the 2021 crisis has caused the search volume to increase.
+```{r}
+usd$Ay<- as.yearmon(usd$Ay)
+usd$Ay <- as.POSIXct(usd$Ay, format ="%d-%m-%y")
+plot(usd$Ay, usd$dolar, col = "blue", type = "l", xlab = "Date", ylab = "Number of searches", main = "Number of searches of the word 'dolar'")
+```
+Having explained the first two, now the prices should be examined further. CPI, consumer price index, is the measure of the changes in overall prices. 
+
+```{r pressure, echo=FALSE}
+dffg <- get_series(series = c("TP.FG.J0"), start_date = "01-03-2014", end_date = "01-03-2021")
+df3 <- dffg$items
+df3$UNIXTIME <- NULL
+df3$Tarih <- as.yearmon(df3$Tarih)
+df3$Tarih <- as.POSIXct(df3$Tarih, format="%d-%m-%Y")
+df3$TP_FG_J0<- as.numeric(as.character.numeric_version(df3$TP_FG_J0))
+plot(df3$Tarih, df3$TP_FG_J0, col = "red", type = "l", xlab = "Years", ylab = "CPI", main = "CPI Per Year")
+
+```
+Unfortunately, there is not any surprises in this chart. It has a tendency to increase. In economic crisis, the overall prices are expected to 
+increase. Thanks to this chart, it can be said that this expectation was appropriate.  
+
+```{r}
+cpi <- read.csv("C:\\Users\\HP\\Desktop\\cpi.csv", header = TRUE, sep = ";")
+cpi$Ay <- as.yearmon(cpi$Ay)
+cpi$Ay <- as.POSIXct(cpi$Ay, format ="%d-%m-%y")
+plot(cpi$Ay, cpi$fiyat, col = "blue", type = "l", xlab = "Date", ylab = "Number of searches", main = "Number of searches of the word 'fiyat'")
+
+```
+
+
+However, there are some unexpected fluctuations in the search volume of the word "fiyat". Just like the CPI, the search volume has also tendency to increase. These flactuations can be explained by human behaviors. After learning the new price, the need for the searching the word "fiyat" should decrease. People will get used to the new price level. The economic crisis in 2020 has also caused people to search the 
+
